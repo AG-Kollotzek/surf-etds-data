@@ -1,0 +1,4 @@
+run_id,csv_file,etd_file,group,roi_area,heatingpads,title,used_in_analysis,note,blueprint,protocol_remark
+,messung_20260210_165108.csv,,,,,,false,,,
+,messung_20260210_174807.csv,,,,,,false,,,
+,messung_20260210_184114.csv,,,,,,false,,,

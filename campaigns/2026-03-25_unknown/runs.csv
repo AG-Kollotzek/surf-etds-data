@@ -1,0 +1,11 @@
+run_id,csv_file,etd_file,group,roi_area,heatingpads,title,used_in_analysis,note,blueprint,protocol_remark
+,ETD_QA_PoP_SingleCouchOrientation_20260325_163729.csv,,,,,,false,,,
+,ETD_QA_PoP_SingleCouchOrientation_20260325_164218.csv,,,,,,false,,,
+,ETD_QA_PoP_SingleCouchOrientation_20260325_165711.csv,,,,,,false,,,
+,ETD_QA_PoP_SingleCouchOrientation_20260325_170823.csv,,,,,,false,,,
+,ETD_QA_PoP_SingleCouchOrientation_20260325_171131.csv,,,,,,false,,,
+,ETD_QA_PoP_SingleCouchOrientation_20260325_172135.csv,,,,,,false,,,
+,ETD_QA_PoP_SingleCouchOrientation_20260325_172429.csv,,,,,,false,,,
+,ETD_QA_PoP_SingleCouchOrientation_20260325_175523.csv,,,,,,false,,,
+,ETD_QA_PoP_SingleCouchOrientation_20260325_181850.csv,,,,,,false,,,
+,ETD_QA_PoP_SingleCouchOrientation_20260325_191410.csv,,,,,,false,,,

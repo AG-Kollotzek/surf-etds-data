@@ -1,0 +1,8 @@
+run_id,csv_file,etd_file,group,roi_area,heatingpads,title,used_in_analysis,note,blueprint,protocol_remark
+,qa_log_20260126_103910.csv,,,,,,false,,,
+,qa_log_20260126_125034.csv,,,,,,false,,,
+,qa_log_20260126_130855.csv,,,,,,false,,,
+,qa_log_20260126_131437.csv,,,,,,false,,,
+,qa_log_20260126_132735.csv,,,,,,false,,,
+,qa_log_20260126_133044.csv,,,,,,false,,,
+,qa_log_20260126_134212.csv,,,,,,false,,,

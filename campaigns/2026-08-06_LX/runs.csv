@@ -1,0 +1,2 @@
+run_id,csv_file,etd_file,group,roi_area,heatingpads,title,used_in_analysis,note,blueprint,protocol_remark
+,ETsurface_easyQA_20260806_152005.csv,,,,,,false,"All three axes constant at 0 and Temp_A = Temp_B = Set_A = Set_B = 25.0 with Stable_A = Stable_B = 1 for the whole run (1072 rows, 113.1 s); these are exactly the values the terminal writes when no controller is connected. Measurement protocol: ETsurface_easyQA_new_20260806_151955_log.json and ETsurface_easyQA_new_20260806_151955_log.txt.",ETsurface_easyQA_new.json,

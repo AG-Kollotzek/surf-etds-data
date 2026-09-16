@@ -1,0 +1,2 @@
+run_id,csv_file,etd_file,group,roi_area,heatingpads,title,used_in_analysis,note,blueprint,protocol_remark
+,ETsurface_easyQA_20260512_161137_QA.csv,,,,,,false,Sphere-detection file without a raw telemetry CSV of the same time stamp.,,

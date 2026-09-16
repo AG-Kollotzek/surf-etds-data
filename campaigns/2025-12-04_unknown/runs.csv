@@ -1,0 +1,6 @@
+run_id,csv_file,etd_file,group,roi_area,heatingpads,title,used_in_analysis,note,blueprint,protocol_remark
+,manual_03_sweep_0-20-0.csv,,,,,,false,,,
+,manual_final_h_0-10.csv,,,,,,false,,,
+,manual_rotation_plus10.csv,,,,,,false,,,
+,qa_log_20251204_163333.csv,,,,,,false,,,
+,qa_log_20251204_163953.csv,,,,,,false,,,

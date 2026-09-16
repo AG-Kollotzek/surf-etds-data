@@ -1,0 +1,5 @@
+run_id,csv_file,etd_file,group,roi_area,heatingpads,title,used_in_analysis,note,blueprint,protocol_remark
+,ETsurface_easyQA_20260513_144731.csv,,,,,,false,,,
+,ETsurface_easyQA_20260513_145147.csv,,,,,,false,,,
+,ETsurface_easyQA_20260513_150617.csv,,,,,,false,,,
+,ETsurface_easyQA_20260513_151302.csv,,,,,,false,,,

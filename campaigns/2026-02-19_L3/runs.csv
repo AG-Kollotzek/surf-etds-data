@@ -1,0 +1,5 @@
+run_id,csv_file,etd_file,group,roi_area,heatingpads,title,used_in_analysis,note,blueprint,protocol_remark
+,ETD_QA_BasicPoP_20260219_172643.csv,,,,,,false,,,
+,ETD_QA_BasicPoP_20260219_173857_pop1.csv,,,,,,false,,,
+,ETD_QA_BasicPoP_20260219_180023_pop1_first_half.csv,,,,,,false,,,
+,ETD_QA_BasicPoP_20260219_182108_pop3_repeat.csv,,,,,,false,,,
