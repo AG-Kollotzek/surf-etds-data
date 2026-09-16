@@ -1,0 +1,7 @@
+* text=auto eol=lf
+
+# Measurement data are stored byte for byte as published; SHA256SUMS covers the exact bytes.
+campaigns/** -text
+
+*.png  binary
+*.pdf  binary

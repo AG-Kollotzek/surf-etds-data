@@ -1,0 +1,11 @@
+# the private list of people is never stored in this repository
+people*.json
+*.local.json
+
+__pycache__/
+.venv/
+.ruff_cache/
+.pytest_cache/
+.DS_Store
+.idea/
+.vscode/

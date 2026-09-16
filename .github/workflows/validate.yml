@@ -1,0 +1,27 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  data-and-tools:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Campaign data are valid
+        run: python tools/validate.py
+
+      - name: Tool tests
+        run: python -m unittest discover -s tools/tests -t tools -v
+
+      - name: CITATION.cff is valid
+        run: |
+          pip install -q cffconvert
+          cffconvert --validate
