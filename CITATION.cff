@@ -1,0 +1,57 @@
+cff-version: 1.2.0
+title: "SURF-ETDS measurement data"
+message: "If you use these data, please cite them as below."
+type: dataset
+authors:
+  - given-names: Tim
+    family-names: Buck
+    affiliation: "Medical University of Innsbruck"
+  # Further contributors are listed in CONTRIBUTORS.md.
+repository-code: "https://github.com/AG-Kollotzek/surf-etds-data"
+abstract: >-
+  Raw measurement data of the SURF Test Unit, a three-degree-of-freedom motion
+  phantom with two heated pads, recorded together with the tracking exports of a
+  surface-guided radiotherapy system (ExacTrac Dynamic Surface) at the linear
+  accelerators of Tirol Kliniken. One folder per measurement day and linac holds
+  the phantom telemetry, the tracking exports, the run index and, where one was
+  written, the measurement protocol. Operators are recorded as role codes.
+keywords:
+  - radiotherapy
+  - surface-guided radiotherapy
+  - SGRT
+  - quality assurance
+  - motion phantom
+  - medical physics
+  - dataset
+# The measurement data and documentation are CC-BY-4.0; the scripts in tools/ are MIT.
+license: CC-BY-4.0
+license-url: "https://github.com/AG-Kollotzek/surf-etds-data/blob/main/README.md#licence"
+version: "1.0.0"
+references:
+  - type: software
+    title: "SURF Test Unit: a low-cost 3-DOF motion phantom for surface-guidance QA"
+    authors:
+      - given-names: Tim
+        family-names: Buck
+    repository-code: "https://github.com/AG-Kollotzek/surf-etds-phantom"
+    notes: >-
+      Firmware, measurement terminal and hardware of the phantom that recorded the
+      telemetry in this dataset; its data dictionary describes the file formats.
+  - type: software
+    title: "SURF ETD analysis pipeline"
+    authors:
+      - given-names: Tim
+        family-names: Buck
+    repository-code: "https://github.com/AG-Kollotzek/surf-etds-analysis"
+    notes: >-
+      Characterisation and validation of the tracking accuracy; evaluates campaign
+      2026-03-10_L4.
+  - type: software
+    title: "SURF ETDS yearly QA"
+    authors:
+      - given-names: Tim
+        family-names: Buck
+    repository-code: "https://github.com/AG-Kollotzek/surf-etds-qa"
+    notes: >-
+      Yearly quality assurance across linacs and report generation; evaluates the
+      campaigns 2026-07-15_L1, 2026-07-29_L0, 2026-08-06_L3 and 2026-08-06_L4.
