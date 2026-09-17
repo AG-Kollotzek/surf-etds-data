@@ -41,8 +41,8 @@ class CheckNamesTest(unittest.TestCase):
         shutil.rmtree(self.root)
         self.people.unlink()
 
-    def run_check(self, *extra):
-        checker = check_names.Checker(check_names.Names(PEOPLE))
+    def run_check(self, *extra, people=PEOPLE):
+        checker = check_names.Checker(check_names.Names(people))
         check_names.check_paths(checker, [self.root], self.root)
         if "--history" in extra:
             check_names.check_history(checker, self.root)
@@ -91,6 +91,22 @@ class CheckNamesTest(unittest.TestCase):
     def test_allowed_identity_is_public(self):
         self.write("docs/a.txt", "Co-authored: E. Mustermann <123+emuster@users.noreply.github.com>\n")
         self.assertEqual(self.run_check(), [])
+
+    def test_author_only_name_only_in_citation_files(self):
+        people = json.loads(json.dumps(PEOPLE))
+        people["people"].append({"name": "Lotte Beispielautorin", "public_name": "L. Beispielautorin",
+                                 "public_name_consent": True, "public_name_scope": "authors"})
+        self.write("CITATION.cff", "authors:\n  - given-names: L.\n    family-names: Beispielautorin\n")
+        self.assertEqual(self.run_check(people=people), [])
+        self.write("README.md", "Reviewed by L. Beispielautorin.\n")
+        findings = self.run_check(people=people)
+        self.assertEqual(len(findings), 1)
+        self.assertIn("author name outside CITATION.cff", findings[0])
+        self.write("README.md", "Reviewed by Lotte.\n")
+        self.assertIn(": name ", self.run_check(people=people)[0])
+        self.write("README.md", "clean\n")
+        self.write("campaigns/2026-08-06_L3/protocol.md", "Messteam: Beispielautorin\n")
+        self.assertIn("public name inside campaigns/", self.run_check(people=people)[0])
 
     def test_part_of_an_allowed_identity_is_not_enough(self):
         people = json.loads(json.dumps(PEOPLE))

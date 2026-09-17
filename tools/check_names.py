@@ -13,15 +13,17 @@ double-encoded UTF-8, and treats "_", digits and camelCase as word boundaries. P
 pdftotext), ZIP members, gzip content and PNG text chunks are read too.
 
 Consented public names ("public_name" with "public_name_consent": true) may appear outside
-campaigns/, for example as authors. Inside campaigns/ no name may appear at all: operators
-are recorded as role codes. Findings are printed masked (first letter and length).
+campaigns/, for example as authors. A person whose consent covers citation author lists only
+("public_name_scope": "authors") may be named in CITATION.cff and nowhere else. Inside campaigns/
+no name may appear at all: operators are recorded as role codes. Findings are printed masked
+(first letter and length).
 
 Standard library only (pdftotext from poppler for PDFs); runs on Python 3.9 and later.
 Exit status: 0 no names found, 1 names found, 2 usage error or invalid list, 3 read or tool error.
 
 Expected list format (only these keys are read):
     {"people": [{"name": "...", "aliases": [], "github": [], "emails": [],
-                 "public_name": null, "public_name_consent": false}],
+                 "public_name": null, "public_name_consent": false, "public_name_scope": null}],
      "deny": [], "commit_identities": {"allowed": []}}
 """
 
@@ -77,6 +79,7 @@ class Names:
             if not isinstance(person, dict) or not isinstance(person.get("name"), str):
                 raise ValueError("every person needs a 'name'")
             consent = person.get("public_name_consent") is True and bool(person.get("public_name"))
+            public_kind = "author" if consent and person.get("public_name_scope") == "authors" else "public"
             public = {w for w in (person.get("public_name") or "").split() if not INITIAL.match(w)} if consent else set()
             words = set(person["name"].split())
             words.update(person.get("aliases") or [])
@@ -87,8 +90,10 @@ class Names:
                 if len(token) < MIN_LENGTH or INITIAL.match(token):
                     continue
                 # consented names, and logins or addresses that are part of an allowed commit identity
-                is_public = token in public or (consent and token in allowed)
-                self._add(token, "public" if is_public else "private")
+                if token in public:
+                    self._add(token, public_kind)
+                else:
+                    self._add(token, "public" if consent and token in allowed else "private")
         for token in data.get("deny") or []:
             if not isinstance(token, str) or not token.strip():
                 raise ValueError("deny entries must be non-empty strings")
@@ -98,9 +103,11 @@ class Names:
         alternation = "|".join(re.escape(t) for t in sorted(self.kind, key=len, reverse=True))
         self.regex = re.compile(r"(?<![a-z])(?:" + alternation + r")(?![a-z])")
 
+    RANK = {"public": 0, "author": 1, "private": 2}  # the stricter kind wins
+
     def _add(self, token, kind):
         for key in {fold(token), fold(token.translate(TRANSLITERATION))}:  # Jürgen, Jurgen, Juergen
-            if self.kind.get(key) != "private":  # private wins over public
+            if self.RANK[kind] >= self.RANK.get(self.kind.get(key), -1):
                 self.kind[key] = kind
 
     def find(self, text: str):
@@ -127,52 +134,54 @@ class Checker:
         self.findings = []
         self.errors = []
 
-    def report(self, where: str, line, text: str, inside_campaigns: bool):
+    def report(self, where: str, line, text: str, scope: str):
+        """scope: "campaigns" (no name at all), "citation" (CITATION.cff) or "other"."""
         for token, kind in self.names.find(text):
-            if kind == "public" and not inside_campaigns:
+            if kind == "public" and scope != "campaigns" or kind == "author" and scope == "citation":
                 continue
-            label = "name" if kind == "private" else "public name inside campaigns/"
+            label = ("name" if kind == "private" else "public name inside campaigns/" if scope == "campaigns"
+                     else "author name outside CITATION.cff")
             location = f"{where}:{line}" if line else where
             self.findings.append(f"{location}: {label} {mask(token)}")
 
-    def text(self, where: str, text: str, inside_campaigns: bool):
+    def text(self, where: str, text: str, scope: str):
         for number, line in enumerate(text.splitlines(), start=1):
-            self.report(where, number, line, inside_campaigns)
+            self.report(where, number, line, scope)
 
-    def blob(self, where: str, data: bytes, inside_campaigns: bool, depth: int = 0):
+    def blob(self, where: str, data: bytes, scope: str, depth: int = 0):
         if depth > 4:
             self.errors.append(f"{where}: nested too deeply to check")
             return
         try:
             if data.startswith(b"%PDF-"):
-                self.text(where, self.pdf_text(data), inside_campaigns)
+                self.text(where, self.pdf_text(data), scope)
             elif data.startswith((b"PK\x03\x04", b"PK\x05\x06")):
                 with zipfile.ZipFile(io.BytesIO(data)) as zf:
                     for info in zf.infolist():
                         member = f"{where}!{info.filename}"
-                        self.report(member, None, info.filename, inside_campaigns)
+                        self.report(member, None, info.filename, scope)
                         if not info.is_dir():
                             if info.file_size > MAX_INFLATE:
                                 self.errors.append(f"{member}: too large to check")
                                 continue
-                            self.blob(member, zf.read(info), inside_campaigns, depth + 1)
+                            self.blob(member, zf.read(info), scope, depth + 1)
             elif data.startswith(b"\x1f\x8b"):
                 with gzip.GzipFile(fileobj=io.BytesIO(data)) as fh:
-                    self.blob(f"{where} (gunzipped)", fh.read(MAX_INFLATE), inside_campaigns, depth + 1)
+                    self.blob(f"{where} (gunzipped)", fh.read(MAX_INFLATE), scope, depth + 1)
             elif data.startswith(b"\x89PNG\r\n\x1a\n"):
-                self.text(f"{where} (PNG text)", png_text(data), inside_campaigns)
+                self.text(f"{where} (PNG text)", png_text(data), scope)
             elif data.startswith((b"\xff\xfe", b"\xfe\xff")):
-                self.text(where, data.decode("utf-16", "replace"), inside_campaigns)
+                self.text(where, data.decode("utf-16", "replace"), scope)
             elif b"\0" in data:
                 for encoding in ("utf-16-le", "utf-16-be"):
                     for offset in (0, 1):
-                        self.text(f"{where} ({encoding})", data[offset:].decode(encoding, "replace"), inside_campaigns)
-                self.text(f"{where} (bytes)", data.decode("latin-1"), inside_campaigns)
+                        self.text(f"{where} ({encoding})", data[offset:].decode(encoding, "replace"), scope)
+                self.text(f"{where} (bytes)", data.decode("latin-1"), scope)
             else:
                 try:
-                    self.text(where, data.decode("utf-8"), inside_campaigns)
+                    self.text(where, data.decode("utf-8"), scope)
                 except UnicodeDecodeError:
-                    self.text(where, data.decode("latin-1"), inside_campaigns)
+                    self.text(where, data.decode("latin-1"), scope)
         except (zipfile.BadZipFile, OSError, EOFError, zlib.error, ValueError, RuntimeError) as exc:
             self.errors.append(f"{where}: cannot be read ({exc})")
 
@@ -217,8 +226,11 @@ def png_text(data: bytes) -> str:
     return b"\n".join(out).decode("utf-8", "replace")
 
 
-def inside(rel: str) -> bool:
-    return rel.replace("\\", "/").startswith("campaigns/")
+def scope(rel: str) -> str:
+    rel = rel.replace("\\", "/")
+    if rel.startswith("campaigns/"):
+        return "campaigns"
+    return "citation" if rel.rsplit("/", 1)[-1] == "CITATION.cff" else "other"
 
 
 SKIP_DIRS = {".git", "__pycache__", ".venv", ".ruff_cache", ".pytest_cache"}
@@ -247,8 +259,8 @@ def check_paths(checker: Checker, paths, root: Path):
                 rel = str(f)
             if ".git" in Path(rel).parts:
                 continue
-            checker.report(rel, None, rel, inside(rel))
-            checker.blob(rel, f.read_bytes(), inside(rel))
+            checker.report(rel, None, rel, scope(rel))
+            checker.blob(rel, f.read_bytes(), scope(rel))
 
 
 def check_history(checker: Checker, repo: Path):
@@ -261,7 +273,7 @@ def check_history(checker: Checker, repo: Path):
     log = git("log", "--all", "--format=%H%x00%an <%ae>%x00%cn <%ce>%x00%B%x1e").decode("utf-8", "replace")
     for record in filter(None, (r.strip("\n") for r in log.split("\x1e"))):
         sha, author, committer, message = (record.split("\x00") + ["", "", ""])[:4]
-        checker.text(f"commit {sha[:7]}", "\n".join((author, committer, message)), False)
+        checker.text(f"commit {sha[:7]}", "\n".join((author, committer, message)), "other")
     objects = git("rev-list", "--all", "--objects").decode("utf-8", "replace").splitlines()
     with subprocess.Popen(["git", "-C", str(repo), "cat-file", "--batch"], stdin=subprocess.PIPE,
                           stdout=subprocess.PIPE) as proc:
@@ -274,11 +286,11 @@ def check_history(checker: Checker, repo: Path):
             proc.stdout.read(1)
             if header[1] != b"blob":
                 if path:
-                    checker.report(f"history {sha[:7]}:{path}", None, path, inside(path))
+                    checker.report(f"history {sha[:7]}:{path}", None, path, scope(path))
                 continue
             where = f"history {sha[:7]}:{path}"
-            checker.report(where, None, path, inside(path))
-            checker.blob(where, data, inside(path))
+            checker.report(where, None, path, scope(path))
+            checker.blob(where, data, scope(path))
         proc.stdin.close()
 
 
