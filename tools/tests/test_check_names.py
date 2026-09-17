@@ -92,6 +92,13 @@ class CheckNamesTest(unittest.TestCase):
         self.write("docs/a.txt", "Co-authored: E. Mustermann <123+emuster@users.noreply.github.com>\n")
         self.assertEqual(self.run_check(), [])
 
+    def test_part_of_an_allowed_identity_is_not_enough(self):
+        people = json.loads(json.dumps(PEOPLE))
+        people["people"][0]["aliases"].append("emu")  # a nickname inside the allowed login "emuster"
+        names = check_names.Names(people)
+        self.assertIn(("emu", "private"), names.find("signed emu"))
+        self.assertIn(("emuster", "public"), names.find("login emuster"))
+
     def test_zip_member_gzip_and_png(self):
         buf = io.BytesIO()
         with zipfile.ZipFile(buf, "w") as zf:

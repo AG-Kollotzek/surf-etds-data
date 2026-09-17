@@ -289,6 +289,9 @@ def check_campaign(report, campaign: Path):
                     report.error(path, "measurement protocol must be a JSON object")
                     continue
                 check_operator_value(report, path, value.get("personal"))
+                entered = value.get("linac")
+                if re.fullmatch(r"L\d", linac) and entered not in (None, "") and str(entered).strip() != linac[1:]:
+                    report.error(path, f"linac {entered!r} in the protocol does not match campaign linac {linac}")
                 logs.setdefault(name[:-len("_log.json")], {})["json"] = (path, value)
         elif name.endswith("_log.txt"):
             values = MESSTEAM.findall(text)

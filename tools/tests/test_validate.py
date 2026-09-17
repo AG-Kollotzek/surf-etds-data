@@ -64,6 +64,11 @@ class ValidateTest(unittest.TestCase):
         (self.folder / "etd" / f"{EXPORT}.json").write_bytes(export("ETD-L4"))
         self.assertProblem("does not match campaign linac L3")
 
+    def test_protocol_linac_mismatch(self):
+        (self.folder / "phantom" / f"{LOG_STEM}_log.json").write_bytes(
+            json.dumps({"personal": "Student1, QMP1", "csv_file": CSV_NAME, "linac": "4"}).encode())
+        self.assertProblem("linac '4' in the protocol does not match campaign linac L3")
+
     def test_export_in_campaign_without_linac(self):
         self.folder = self.folder.rename(self.folder.with_name("2026-08-06_LX"))
         self.assertProblem("without a linac number")

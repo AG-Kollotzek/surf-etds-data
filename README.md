@@ -28,7 +28,9 @@ tools/          validation and preparation scripts (MIT)
 ```
 
 A campaign is one measurement day on one linac. `<Linac>` is `L<n>` where the linac is
-documented, `LX` for test runs without a linac and `unknown` where nothing documents it.
+documented, `LX` for test runs without a linac and `unknown` where nothing documents it. The
+`linac` field of a terminal protocol is kept as entered: in `2026-08-06_LX`, a run without motion
+controller before the linac 3 and 4 measurements, it reads `5`, which is not a linac.
 The ID of a published campaign never changes.
 
 ## Campaigns

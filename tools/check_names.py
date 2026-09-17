@@ -54,11 +54,24 @@ def fold(text: str) -> str:
     return text.replace("ß", "ss").replace("ẞ", "ss").casefold()
 
 
+def allowed_parts(identities):
+    """Whole name words, addresses, address local parts and logins of the allowed commit identities."""
+    parts = set()
+    for identity in identities:
+        m = re.fullmatch(r"\s*(.*?)\s*<([^<>]*)>\s*", identity)
+        name, mail = (m.group(1), m.group(2)) if m else (identity, "")
+        parts.update(name.split())
+        if mail:
+            local = mail.split("@", 1)[0]
+            parts.update((mail, local, local.split("+")[-1]))  # 123+login@users.noreply.github.com
+    return parts
+
+
 class Names:
     def __init__(self, data):
         if not isinstance(data, dict) or not isinstance(data.get("people"), list):
             raise ValueError("the list needs a 'people' array")
-        allowed = "\n".join((data.get("commit_identities") or {}).get("allowed") or [])
+        allowed = allowed_parts((data.get("commit_identities") or {}).get("allowed") or [])
         self.kind = {}
         for person in data["people"]:
             if not isinstance(person, dict) or not isinstance(person.get("name"), str):
