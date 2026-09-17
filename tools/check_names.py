@@ -61,9 +61,11 @@ def allowed_parts(identities):
     parts = set()
     for identity in identities:
         m = re.fullmatch(r"\s*(.*?)\s*<([^<>]*)>\s*", identity)
-        name, mail = (m.group(1), m.group(2)) if m else (identity, "")
+        if not m:  # not "Name <e-mail>": allows nothing
+            continue
+        name, mail = m.group(1), m.group(2)
         parts.update(name.split())
-        if mail:
+        if "@" in mail:
             local = mail.split("@", 1)[0]
             parts.update((mail, local, local.split("+")[-1]))  # 123+login@users.noreply.github.com
     return parts

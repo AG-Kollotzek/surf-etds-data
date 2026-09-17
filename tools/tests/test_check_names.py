@@ -108,6 +108,9 @@ class CheckNamesTest(unittest.TestCase):
         self.write("campaigns/2026-08-06_L3/protocol.md", "Messteam: Beispielautorin\n")
         self.assertIn("public name inside campaigns/", self.run_check(people=people)[0])
 
+    def test_malformed_allowed_identity_allows_nothing(self):
+        self.assertEqual(check_names.allowed_parts(["E. Mustermann <no-close", "no mail at all"]), set())
+
     def test_part_of_an_allowed_identity_is_not_enough(self):
         people = json.loads(json.dumps(PEOPLE))
         people["people"][0]["aliases"].append("emu")  # a nickname inside the allowed login "emuster"
