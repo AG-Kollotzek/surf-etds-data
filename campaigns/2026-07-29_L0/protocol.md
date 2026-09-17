@@ -12,7 +12,7 @@ ExacTrac Dynamic Surface - Initialmessung für jährliche QA
 
 - Datum der Messung: 29.07.2026
 - gemessen: LINAC 0
-- Messteam: Student2, QMP1, Student3, Student1
+- Messteam: Student2, Lead1, Student3, Student1
 
 ### Beschreibung / Ziel der Messung
 

@@ -36,9 +36,10 @@ TEXT_SUFFIXES = {".csv", ".json", ".txt", ".md"}
 RUNS_HEADER = ["run_id", "csv_file", "etd_file", "group", "roi_area", "heatingpads", "title", "used_in_analysis",
                "note", "blueprint", "protocol_remark"]
 
-# Operators are recorded as role codes (QMP1, Student1, ...), never as names. Same grammar as the
-# validate workflow of surf-etds-phantom.
-CODES = re.compile(r"\s*(QMP|RTT|Student)[1-9][0-9]?(\s*,\s*(QMP|RTT|Student)[1-9][0-9]?)*\s*")
+# Operators are recorded as role codes (Lead1, QMP2, Student1, ...), never as names. Same grammar as the
+# validate workflow of surf-etds-phantom. Retired codes are never used again.
+CODES = re.compile(r"\s*(Lead|QMP|RTT|Student)[1-9][0-9]?(\s*,\s*(Lead|QMP|RTT|Student)[1-9][0-9]?)*\s*")
+RETIRED_CODES = {"QMP1"}
 MESSTEAM = re.compile(r"^Messteam\s*:\s*(.*)$", re.M)
 
 # The exports name the workstation in their first field; published exports carry ETD-L<n> instead.
@@ -129,7 +130,9 @@ def check_operator_value(report, path, value):
     if value in (None, "", "-"):
         return
     if not isinstance(value, str) or not CODES.fullmatch(value):
-        report.error(path, "operator field is not a role code list (expected e.g. 'QMP1, Student1')")
+        report.error(path, "operator field is not a role code list (expected e.g. 'Lead1, Student1')")
+    elif RETIRED_CODES & {code.strip() for code in value.split(",")}:
+        report.error(path, f"retired role code in the operator field: {value}")
 
 
 def check_runs(report, campaign: Path, texts: dict):

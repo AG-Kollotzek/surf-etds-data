@@ -3,7 +3,7 @@
 ======================================================================
 Datum der Messung : 2026-08-06
 gemessen          : LINAC 5
-Messteam          : Student1, QMP1, Student2, Student3
+Messteam          : Student1, Lead1, Student2, Student3
 Messzweck         : QA
 
 Modus             : QA (Config wird beschrieben)

@@ -3,7 +3,7 @@
 ======================================================================
 Datum der Messung : 2026-08-06
 gemessen          : LINAC 4
-Messteam          : Student1,Student2, QMP1
+Messteam          : Student1,Student2, Lead1
 Messzweck         : QA_2026
 
 Modus             : QA (Config wird beschrieben)

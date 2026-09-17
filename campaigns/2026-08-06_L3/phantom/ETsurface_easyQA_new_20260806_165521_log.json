@@ -7,7 +7,7 @@
   "blueprint_file": "ETsurface_easyQA_new.json",
   "blueprint_name": "Erste einfache QA Sequenz für ET Surface System der Tirol Kliniken",
   "linac": "3",
-  "personal": "Student1, QMP1, Student2",
+  "personal": "Student1, Lead1, Student2",
   "messzweck": "QA 2026",
   "meas_couch_type": "single angle",
   "heatingpads": "32",

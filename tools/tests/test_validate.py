@@ -66,7 +66,7 @@ class ValidateTest(unittest.TestCase):
 
     def test_protocol_linac_mismatch(self):
         (self.folder / "phantom" / f"{LOG_STEM}_log.json").write_bytes(
-            json.dumps({"personal": "Student1, QMP1", "csv_file": CSV_NAME, "linac": "4"}).encode())
+            json.dumps({"personal": "Student1, Lead1", "csv_file": CSV_NAME, "linac": "4"}).encode())
         self.assertProblem("linac '4' in the protocol does not match campaign linac L3")
 
     def test_export_in_campaign_without_linac(self):
@@ -74,8 +74,19 @@ class ValidateTest(unittest.TestCase):
         self.assertProblem("without a linac number")
 
     def test_operator_name_in_json(self):
-        (self.folder / "phantom" / f"{LOG_STEM}_log.json").write_text(json.dumps({"personal": "Erika, QMP1"}))
+        (self.folder / "phantom" / f"{LOG_STEM}_log.json").write_text(json.dumps({"personal": "Erika, Lead1"}))
         self.assertProblem("operator field is not a role code list")
+
+    def test_lead_code_and_retired_code(self):
+        log = self.folder / "phantom" / f"{LOG_STEM}_log"
+        log.with_suffix(".json").write_bytes(
+            json.dumps({"personal": "Student1, Lead1", "csv_file": CSV_NAME, "linac": "3"}).encode())
+        log.with_suffix(".txt").write_bytes(b"Messteam          : Student1, Lead1\n")
+        write_sums(self.folder)
+        self.assertEqual(validate.validate(self.root), [])
+        log.with_suffix(".json").write_bytes(
+            json.dumps({"personal": "Student1, QMP1", "csv_file": CSV_NAME, "linac": "3"}).encode())
+        self.assertProblem("retired role code")
 
     def test_operator_name_in_txt(self):
         (self.folder / "phantom" / f"{LOG_STEM}_log.txt").write_text("Messteam : Erika\n")

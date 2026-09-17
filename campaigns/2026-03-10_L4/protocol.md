@@ -8,7 +8,7 @@ transcribed: page numbers and one organisational to-do. The original is kept by 
 
 ## Messprotokoll: Versuchsreihe 10.03.2026
 
-QMP1, Student2, Student4
+Lead1, Student2, Student4
 
 ### Allgemeine Informationen
 

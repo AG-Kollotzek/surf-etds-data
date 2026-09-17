@@ -49,14 +49,14 @@ def make_campaign(root: Path, name="2026-08-06_L3") -> Path:
     (folder / "phantom" / CSV_NAME).write_bytes(b"Time_Sec;Pos_H;Pos_V;Pos_R\n0.1;0.0;0.0;0.0\n")
     (folder / "phantom" / QA_NAME).write_bytes(b"Time_Sec;Point_ID\n")
     (folder / "phantom" / f"{LOG_STEM}_log.json").write_bytes(
-        json.dumps({"personal": "Student1, QMP1", "csv_file": CSV_NAME, "linac": "3"}).encode())
+        json.dumps({"personal": "Student1, Lead1", "csv_file": CSV_NAME, "linac": "3"}).encode())
     (folder / "phantom" / f"{LOG_STEM}_log.txt").write_bytes(b"Datum der Messung : 2026-08-06\n"
-                                                             b"Messteam          : Student1, QMP1\n")
+                                                             b"Messteam          : Student1, Lead1\n")
     (folder / "etd" / f"{EXPORT}.json").write_bytes(export())
     (folder / "etd" / f"{EXPORT}.png").write_bytes(png())
     (folder / "runs.csv").write_bytes(runs_csv([
         ["13", CSV_NAME, f"{EXPORT}.json", "single angle", "", "OFF", "deflection 1", "true", "", "", ""],
     ]).encode())
-    (folder / "protocol.md").write_bytes("# Messprotokoll\n\nMessteam: Student1, QMP1\n".encode())
+    (folder / "protocol.md").write_bytes("# Messprotokoll\n\nMessteam: Student1, Lead1\n".encode())
     write_sums(folder)
     return folder

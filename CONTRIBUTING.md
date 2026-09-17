@@ -10,7 +10,7 @@ of the original protocol.
    and start the measurement terminal as described in its `CONTRIBUTING.md`.
 2. Place the lab's private list of people as `software/people.local.json` in that clone (it is
    git-ignored there). The terminal then offers the names for selection and writes **role codes**
-   (`QMP1`, `Student2`, ...) into the protocol logs. Never type names into the free-text fields.
+   (`Lead1`, `QMP2`, `Student2`, ...) into the protocol logs. Never type names into the free-text fields.
 
 ## After the measurement
 

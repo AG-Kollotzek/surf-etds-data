@@ -104,9 +104,11 @@ and `xray_verification_point_id`, the point number used by `xray_verification_v2
 
 ## Pseudonymisation
 
-- **Operators** appear only as role codes: `QMP<n>` for a Qualified Medical Physicist,
-  `Student<n>` for students (including PhD students, student assistants and interns);
-  `RTT<n>` is reserved. The mapping to people is kept privately by the lab and is not published.
+- **Operators** appear only as role codes: `Lead<n>` for the lab lead, `QMP<n>` for a Qualified
+  Medical Physicist, `Student<n>` for students (including PhD students, student assistants and
+  interns); `RTT<n>` is reserved. The mapping to people is kept privately by the lab and is not
+  published. One code was corrected on 2026-09-17 (`QMP1` became `Lead1`); earlier commits of
+  this repository and the protocols in the history of `surf-etds-phantom` show `QMP1`.
 - **Workstation names:** the first field of every ExacTrac export, `computerName`, named the
   tracking workstation. It is replaced by `ETD-L<n>`, where `<n>` is the linac of the campaign;
   no other byte of the export changes.
